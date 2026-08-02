@@ -1,7 +1,42 @@
+import subprocess
+
 from dotenv import load_dotenv
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+
+
+def pull_model(model_name: str) -> tuple[bool, str]:
+    """
+    Download a model from Ollama.
+
+    Returns:
+        Tuple of (success: bool, message: str)
+    """
+    try:
+        process = subprocess.run(
+            ["ollama", "pull", model_name],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+
+        if process.returncode == 0:
+            return True, f"Successfully installed {model_name}"
+        else:
+            return False, f"Error pulling {model_name}: {process.stderr}"
+
+    except Exception as e:
+        return False, f"Error downloading {model_name}: {str(e)}"
+
+
+# ollama models
+if "ollama_models" not in st.session_state:
+    st.session_state.ollama_models = ["llama3.2:1b", "gemma3:270m"]
+
+    for mdl in st.session_state.ollama_models:
+        pull_model(mdl)
 
 
 # load the env variables
@@ -34,7 +69,7 @@ if option == "OpenAI":
 else:
     model = st.selectbox(
         "Choose the model from Ollama",
-       ["llama3.2:1b", "gemma3:270m"]
+       st.session_state.ollama_models
     )
 
 # initiate chat history
