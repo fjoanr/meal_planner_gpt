@@ -57,7 +57,7 @@ If you have any ingredients that you want to use, please let me know and we can 
 # give option to choose from Ollama or OpenAI models
 option = st.selectbox(
     "Choose your LLM provider",
-    ("Ollama", "OpenAI"),
+    ("OpenAI"),  # Ollama only available offline
 )
 
 # choose a model from the chosen provider
